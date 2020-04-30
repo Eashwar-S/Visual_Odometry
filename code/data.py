@@ -34,3 +34,5 @@ path = "Oxford_dataset/stereo/centre/*.png"
 fx, fy, cx, cy, G_camera_image, LUT = ReadCameraModel('Oxford_dataset/model')
 undistortedImages = readandUndistortImages(path, LUT)
 
+
+
