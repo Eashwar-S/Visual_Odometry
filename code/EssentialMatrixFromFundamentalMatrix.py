@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
-
-
+ 
 def essentialMatrix(K,F):
     E = K.T@F@K
     U,S,V = np.linalg.svd(E)
@@ -9,13 +8,17 @@ def essentialMatrix(K,F):
     S = np.diag(S) 
     
     E = U@S@V
-    E = E/np.linalg.norm(E)
+    # E = E/np.linalg.norm(E)
     return E 
    
-
 if __name__ == '__main__':
     K = np.array([1, 0, 0, 0, 1, 0, 0, 0, 0]).reshape(3,3)
-    F = np.arange(9).reshape(3,3)
+    pt1 = np.random.randint(16,size=20).reshape(-1,2)
+    pt2 = np.random.randint(16,size=20).reshape(-1,2)
+    F,_ = cv2.findFundamentalMat(pt1,pt2,cv2.FM_8POINT)
     E = essentialMatrix(K,F)
     print(E)
+
+
+
 

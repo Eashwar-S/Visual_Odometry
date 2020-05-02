@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
+from EssentialMatrixFromFundamentalMatrix import *
 
-def extractCameraPose(E):
+def extractCameraPose(E:np.array)->list:
     W = np.array([[0, -1, 0],
                   [1, 0, 0],
                   [0, 0, 1]]) 
@@ -27,9 +28,14 @@ def extractCameraPose(E):
 
 
 if __name__ == '__main__':
-    
-    E = np.random.randint(10,size = 9).reshape(3,3)
+    K = np.array([1, 0, 0, 0, 1, 0, 0, 0, 0]).reshape(3,3)
+    pt1 = np.random.randint(16,size=20).reshape(-1,2)
+    pt2 = np.random.randint(16,size=20).reshape(-1,2)
+    F,_ = cv2.findFundamentalMat(pt1,pt2,cv2.FM_8POINT)
+    E = essentialMatrix(K,F)
+
     R1,R2,R3,R4,C1,C2,C3,C4 = extractCameraPose(E)
+
     print("function")
     print(R1)
     print(R2)
@@ -40,10 +46,14 @@ if __name__ == '__main__':
     print(C3)
     print(C4)
     print(" ")
+   
+    print("opencv")
+    R1, R2, T = cv2.decomposeEssentialMat(E)
+    print(R1)
+    print(R2)
+    print(T)
+   
 
-    # print("opencv")
-    # R1, R2, T = cv2.decomposeEssentialMat(E)
-    # print(R1)
-    # print(R2)
-    # print(T)
+
+
 
