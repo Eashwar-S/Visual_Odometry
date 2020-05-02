@@ -34,26 +34,31 @@ def getKeyPointCoordinates(matches,kp1,kp2):
     return listKp1,listKp2
 
 
-def getInliersRansac(matches,kp1,kp2):
+def getInliersRansac(matches,kp1,kp2): 
     listKp1,listKp2 = getKeyPointCoordinates(matches,kp1,kp2)
-
     n = 0 
     bestF = None 
-    for _ in range(100):
+    inliersP1 = []
+    inliersP2 = []
+    for _ in range(20):
         f1 ,f2 = sampleRandomFeatures(listKp1,listKp2)
         F = estimateFundamentalMatrix(f1,f2) 
-        S = []
+        Sx = []
+        Sy = []
         for j in range(len(listKp1)):
             x1 = np.append(listKp1[j],1).reshape(3,1)
             x2 = np.append(listKp2[j],1).reshape(3,1)
             dist = x2.T@F@x1 
             if (np.max(dist) < 0.01):
-                S.append(f1)
+                Sx.append(x1.reshape(-1))
+                Sy.append(x2.reshape(-1))
 
-        if n < len(S):
-            n = len(S)
+        if n < len(Sx):
+            n = len(Sx)
             bestF = F
-    return bestF
+            inliersP1 = Sx
+            inliersP2 = Sy
+    return bestF,inliersP1,inliersP2
 
 
 
@@ -61,7 +66,7 @@ if __name__=='__main__':
     img1 = cv2.imread('./Oxford_dataset/stereo/centre/1399381447017075.png')
     img2 = cv2.imread('./Oxford_dataset/stereo/centre/1399381447079564.png')
     matches,kp1,kp2,des1,des2 = featureMatching(img1,img2)
-    F = getInliersRansac(matches,kp1,kp2)
+    F,inliersP1,inliersP2 = getInliersRansac(matches,kp1,kp2)
     print("function")
     print(F)
 

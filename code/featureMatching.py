@@ -1,11 +1,11 @@
 import cv2
 
 def featureMatching(img1,img2):
-    orb = cv2.ORB_create(nfeatures=500)
+    orb = cv2.ORB_create(nfeatures=100)
     kp1, des1 = orb.detectAndCompute(img1, None)
     kp2, des2 = orb.detectAndCompute(img2, None)
 
-    # sift = cv2.xfeatures2d.SIFT_create()
+    # sift = cv2.xfeatures2d.SIFT_create()	 
     # kp1, des1 = sift.detectAndCompute(img1,None)
     # kp2, des2 = sift.detectAndCompute(img2,None) 
 
