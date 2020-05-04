@@ -37,7 +37,7 @@ def getKeyPointCoordinates(matches,kp1,kp2):
 
 def getInliersRansac(matches,kp1,kp2): 
     listKp1,listKp2 = getKeyPointCoordinates(matches,kp1,kp2)
-    print(len(listKp1))
+
     n = 0 
     bestF = None 
     inliersP1 = []

@@ -55,10 +55,10 @@ def getInliersRansac(matches,kp1,kp2):
         dist = np.sum((x2@F)* x1, axis = 1, keepdims=True)**2 /   \
                np.sum(np.hstack((e1[:, :-1],e2[:,:-1]))**2, axis = 1, keepdims=True)
         
-        inliers = dist<= 0.05
+        inliers = dist<= 0.07
         inliersIndex = np.argwhere(inliers==True) 
-        inliersKp1 = listKp1[inliersIndex[:,0]]
-        inliersKp2 = listKp2[inliersIndex[:,0]]
+        inliersKp1 = x1[inliersIndex[:,0]]
+        inliersKp2 = x2[inliersIndex[:,0]]
         
         count = np.sum(inliers)
         if bestCount <  count:

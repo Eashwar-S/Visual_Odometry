@@ -1,7 +1,7 @@
 from ReadCameraModel import *
 from featureMatching import *
 from EstimateFundamentalMatrix import *
-from GetInliersRansac import *
+from GetInliersRansac2 import *
 from ExtractCameraPose import * 
 from LinearTriangulation import *
 from DisambiguateCameraPose import * 
@@ -53,6 +53,8 @@ def main():
     frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY) 
      
     Ht = np.eye(4)
+   
+    frameNumber = 0
     while(cap.isOpened()):
        frame1  = frame2
        _, frame2 = cap.read()
@@ -64,31 +66,33 @@ def main():
        
 
        #using created functions
-       # matches,kp1,kp2,des1,des2 = featureMatching(frame1,frame2)
-       # F,inliersP1,inliersP2 = getInliersRansac(matches,kp1,kp2)
+       matches,kp1,kp2,des1,des2 = featureMatching(frame1,frame2)
+       F,inliersP1,inliersP2 = getInliersRansac(matches,kp1,kp2)
 
 
-       # listKp1,listKp2 = getKeyPointCoordinates(matches,kp1,kp2)
-       # E = estimateFundamentalMatrix(K,F)
+       listKp1,listKp2 = getKeyPointCoordinates(matches,kp1,kp2)
+       E = estimateFundamentalMatrix(K,F)
        # E,_ = cv2.findEssentialMat(listKp1,listKp2,cameraMatrix=K,method=cv2.RANSAC)
+       # print(E)
+       # print(Ecv)
 
-       # R1,R2,R3,R4,C1,C2,C3,C4  = extractCameraPose(E)
+       R1,R2,R3,R4,C1,C2,C3,C4  = extractCameraPose(E)
 
         
-       # Xset1 = linearTriangulation(K,np.zeros((3,1)),np.eye(3),C1,R1,inliersP1,inliersP2)
-       # Xset2 = linearTriangulation(K,np.zeros((3,1)),np.eye(3),C2,R2,inliersP1,inliersP2)
-       # Xset3 = linearTriangulation(K,np.zeros((3,1)),np.eye(3),C3,R3,inliersP1,inliersP2)
-       # Xset4 = linearTriangulation(K,np.zeros((3,1)),np.eye(3),C4,R4,inliersP1,inliersP2)
-       # Xset = [Xset1,Xset2,Xset3,Xset4] 
-       # Cset = [C1,C2,C3,C4]
-       # Rset = [R1,R2,R3,R4]
-       # C,R = disambiguateCameraPose(Cset,Rset,Xset)
+       Xset1 = linearTriangulation(K,np.zeros((3,1)),np.eye(3),C1,R1,inliersP1,inliersP2)
+       Xset2 = linearTriangulation(K,np.zeros((3,1)),np.eye(3),C2,R2,inliersP1,inliersP2)
+       Xset3 = linearTriangulation(K,np.zeros((3,1)),np.eye(3),C3,R3,inliersP1,inliersP2)
+       Xset4 = linearTriangulation(K,np.zeros((3,1)),np.eye(3),C4,R4,inliersP1,inliersP2)
+       Xset = [Xset1,Xset2,Xset3,Xset4] 
+       Cset = [C1,C2,C3,C4]
+       Rset = [R1,R2,R3,R4]
+       C,R = disambiguateCameraPose(Cset,Rset,Xset)
        
        #Using opencv
-       matches,kp1,kp2,des1,des2 = featureMatching(frame1,frame2)
-       listKp1,listKp2 = getKeyPointCoordinates(matches,kp1,kp2)
-       Ecv,_ = cv2.findEssentialMat(listKp1,listKp2,cameraMatrix=K,method=cv2.RANSAC)
-       points, R, C, mask = cv2.recoverPose(Ecv, listKp1, listKp2,cameraMatrix=K)
+       # matches,kp1,kp2,des1,des2 = featureMatching(frame1,frame2)
+       # listKp1,listKp2 = getKeyPointCoordinates(matches,kp1,kp2)
+       # Ecv,_ = cv2.findEssentialMat(listKp1,listKp2,cameraMatrix=K,method=cv2.RANSAC)
+       # points, R, C, mask = cv2.recoverPose(Ecv, listKp1, listKp2,cameraMatrix=K)
 
        # print(E)
        # print(Ecv)
@@ -106,22 +110,24 @@ def main():
        Ht = Ht1 
 
        # results for created functions
-       # result.append([xt1,zt1])
-       # ax.plot([xt1],[zt1],'o')
-       
-       #results for opencv
        result.append([-xt1,zt1])
        ax.plot([-xt1],[zt1],'o')
+       
+       #results for opencv
+       # result.append([-xt1,zt1])
+       # ax.plot([-xt1],[zt1],'o')
 
        plt.pause(0.01)
 
-       
+       frameNumber += 1 
+       print(frameNumber)
+
        cv2.imshow('img2',frame1)
        if cv2.waitKey(1) & 0xFF == ord('q'):
            break
 
-    # np.savetxt("result.csv", result, delimiter=",") 
-    np.savetxt("resultcv.csv", result, delimiter=",") 
+    np.savetxt("result.csv", result, delimiter=",") 
+    # np.savetxt("resultcv.csv", result, delimiter=",") 
     cap.release()
     cv2.destroyAllWindows() 
 
