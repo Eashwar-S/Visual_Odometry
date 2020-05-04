@@ -37,32 +37,38 @@ def getKeyPointCoordinates(matches,kp1,kp2):
 
 def getInliersRansac(matches,kp1,kp2): 
     listKp1,listKp2 = getKeyPointCoordinates(matches,kp1,kp2)
-    print(len(listKp1))
-    n = 0 
-    bestF = None 
-    inliersP1 = []
-    inliersP2 = []
 
-    for _ in range(20):
+    bestF = None; bestInliersKp1 = None; bestInliersKp2 = None; bestCount= 0;
+     
+
+    for i in range(500):
+        S = []
+        count = 0
         f1 ,f2 = sampleRandomFeatures(listKp1,listKp2)
         F = estimateFundamentalMatrix(f1,f2) 
         Sx = []
         Sy = []
-        for j in range(len(listKp1)):
-            x1 = np.append(listKp1[j],1).reshape(3,1)
-            x2 = np.append(listKp2[j],1).reshape(3,1)
-            dist = np.linalg.norm(x2.T@F@x1)
 
-            if (dist < 0.05):
-                Sx.append(x1.reshape(-1))
-                Sy.append(x2.reshape(-1))
+        x1 = np.hstack((listKp1,np.ones((len(listKp1),1))))
+        x2 = np.hstack((listKp2,np.ones((len(listKp1),1))))
+        e1, e2 = x1 @ F.T, x2 @ F
+        dist = np.sum((x2@F)* x1, axis = 1, keepdims=True)**2 /   \
+               np.sum(np.hstack((e1[:, :-1],e2[:,:-1]))**2, axis = 1, keepdims=True)
+        
+        inliers = dist<= 0.05
+        inliersIndex = np.argwhere(inliers==True) 
+        inliersKp1 = listKp1[inliersIndex[:,0]]
+        inliersKp2 = listKp2[inliersIndex[:,0]]
+        
+        count = np.sum(inliers)
+        if bestCount <  count:
+            bestInliersKp1 = inliersKp1
+            bestInliersKp2 = inliersKp2
 
-        if n < len(Sx):
-            n = len(Sx)
-            bestF = F
-            inliersP1 = Sx
-            inliersP2 = Sy
-    return bestF,inliersP1,inliersP2
+            bestCount = count
+            bestF = F 
+
+    return bestF,bestInliersKp1,bestInliersKp2
 
 
 
@@ -79,13 +85,11 @@ if __name__=='__main__':
     print(E)
 
     listKp1,listKp2 = getKeyPointCoordinates(matches,kp1,kp2)
-    Fcv, inliers = cv2.findFundamentalMat(listKp1,listKp2,method=cv2.RANSAC)
+    Fcv, inliers = cv2.findFundamentalMat(listKp1,listKp2,method=cv2.FM_RANSAC)
     Ecv,_ = cv2.findEssentialMat(listKp1,listKp2,cameraMatrix=K,method=cv2.RANSAC)
     print("Opencv")
     print(Fcv)
     print(Ecv)
-    print(K.T@Fcv@K)
-
     cv2.waitKey()
 
 

@@ -43,13 +43,13 @@ def estimateFundamentalMatrix(pt1:np.array,pt2:np.array)->list:
                    [0, 0, 1]])
 
     F = T2.T@F@T1                                #Denormalize F
-
+    
     F = F/F[2,2]
     return F
 
 
 if __name__=='__main__':
-    pt1 = np.random.randint(16,size=20).reshape(-1,2)
+    pt1 = np.random.randint(20,size=20).reshape(-1,2)
     pt2 = np.random.randint(16,size=20).reshape(-1,2)
     F =estimateFundamentalMatrix(pt1,pt2)
     print("method")
