@@ -49,10 +49,24 @@ The above equation can be modified to the matrix form $Ax = 0$
     \centering
     \includegraphics[width=13cm]{FM2}
 \end{figure}
-Hence, the fundamental matrix can be found finding the SVD of matrix A, the decomposition $U*S*V^T$ would be obtained with U and V orthonormal matrices and a diagonal matrix S that contains the singular values. The last column of V is the true solution of the matrix equation $Ax = 0$ which lies in null space of matric A. The last column of V can be reshaped into fundamental matrx of size 3x3. This is done in the python file EstimateFundamentalMatrix.py.
-
+Hence, the fundamental matrix can be found finding the SVD of matrix A, the decomposition $U*S*V^T$ would be obtained with U and V orthonormal matrices and a diagonal matrix S that contains the singular values. The last column of V is the true solution of the matrix equation $Ax = 0$ which lies in null space of matric A. The last column of V can be reshaped into fundamental matrx of size 3x3. This is done in the python file EstimateFundamentalMatrix.py. The fundamental matrix obtained is compared with the results obtained from cv2.findFundamentalMat Opencv function which uses 8-point algorithm. The results are shown below:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=11cm]{funmat}
+    \caption{Fundamental matrix comparison}
+    \label{fig:Fundamental matrix comparison}
+\end{figure}
+\newline
+The code snippet of the comparison is shown below:
+\newpage
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=11cm]{funcode}
+    \caption{Fundamental matrix comparison code}
+    \label{fig:Fundamental matrix comparison code}
+\end{figure}
 \subsection{Match Outlier Rejection via RANSAC:}
-The corresponding point in two images computed may be noisy. Thus, we may not get the correct estimate of the fundamental matrix. So, in order to get the correct estimate, we employ RANSAC algorithm to remove the outliers. After removing the outiers, the fundamental matrix F with maximum number of inliers is chosen. The RANSAC algorithm is implemented in GetInlierRANSANC.py pyrhin file.
+The corresponding point in two images computed may be noisy. Thus, we may not get the correct estimate of the fundamental matrix. So, in order to get the correct estimate, we employ RANSAC algorithm to remove the outliers. After removing the outiers, the fundamental matrix F with maximum number of inliers is chosen. The RANSAC algorithm is implemented in GetInlierRANSANC.py python file. The fundamental and essential matrix obtained by implemented RANSAC algorithm is compared with 
 
 \subsection{Estimate Essential Matrix from Fundamental Matrix:}
 We can find the relative camera poses between two images using the fundamental matrix F. In order to compute relative poses between two images we need to first compute essential matrix(E). In order to compute, essential matrix, we need to intrinsic matrix(K). The relation is given by:
@@ -67,8 +81,21 @@ By, due to noises present in matrix K, the third eigen value of matrix E is not 
     \centering
     \includegraphics[width=6cm]{EM2}
 \end{figure}
-This is implemented in EssentialMatrixFromFundamentalMatrix.py python file.
-
+This is implemented in EssentialMatrixFromFundamentalMatrix.py python file. The result of the essential matrix was verified by passing the camera matrix as identity matrix and was found that both fundamental and essential matrix was equal.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=11cm]{essmat}
+    \caption{Essential matrix}
+    \label{fig:Essential matrix}
+\end{figure}
+\newline
+The code snippet of the comparison is shown below:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=11cm]{esscode}
+    \caption{Essential matrix comparison code}
+    \label{fig:Essential matrix comparison code}
+\end{figure}
 \subsection{Estimate Camera Pose from Essential Matrix}
 Camera pose refers to the position and angle at which the camera is places w.r.t to the world coordinates. Position of the camera refers to the center of the camera. The position and rotation of the camera can be determined by using essential matrix(E). First, we compute the svd of E.
 \begin{figure}[h]
@@ -89,8 +116,29 @@ The camera center C and rotation of the camera R can be computes as follows:
 \item $C_3 = U(:,3) , R_3 = U*W*V^{T}$
 \item $C_4 = -U(:,3) , R_4 = U*W*V^{T}$
 \end{enumerate}
-If the $det(R) = -1,$ the camera pose must be corrected i.e. $C=-C$ and $R=-R$. This is implemented in ExtractCameraPose.py python file.
-
+If the $det(R) = -1,$ the camera pose must be corrected i.e. $C=-C$ and $R=-R$. This is implemented in ExtractCameraPose.py python file. The camera pose obtained was compared with Opencv function cv2.decomposeEssentialMat function. The compared results are shown below:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=9cm]{came}
+    \caption{Pair of Rotation and Translation matrix obtained}
+    \label{fig:Pair of Rotation and Translation matrix obtained}
+\end{figure}
+\newline
+In Opencv, the function returns only 1 rotation matrix and multiplication of rotation and translation matrix. The results are shown below:
+\newpage
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=6cm]{came1}
+    \caption{Rotation and Translation matrix obtained from Opencv}
+    \label{fig:Rotation and Translation matrix obtained from Opencv}
+\end{figure}
+The code snippet of the comparison is shown below:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=7.5cm]{camecode}
+    \caption{Rotation and Translation matrix code}
+    \label{fig:Rotation and Translation matrix code}
+\end{figure}
 \subsection{Linear Triangulation:}
 Linear triangulation is a method to extract the 3D coordinates of a point in the image frame(X) from two different camera projections of the point$(x,x^{'})$ from 2 cameras.  From the camera matrix of two cameras($C_1, C_2$) which are $P,P^{'}$, we need to estimate the 3D coordinates of X using linear triangulation. \\
 We know the relation between $(x,x^{'})$ and $P,P^{'}$ and X.
@@ -104,7 +152,6 @@ and we also know that
 \begin{equation}
 	cross(x, PX)= 0 
 \end{equation}
-\newpage
 \begin{figure}[h]
     \centering
     \includegraphics[width=9cm]{formula}
@@ -130,6 +177,21 @@ where $r_3$ is the third row of the rotation matrix.The best camera configuratio
 
 \subsection{Plotting the motion of the camera:}
 The final part of this pipeline is plotting the camera center based on translation and rotation between successive frames.
+\newpage
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=11cm]{output1}
+    \caption{Camera Trajectory}
+    \label{fig:Camera Trajectory}
+\end{figure}
 
+\section{Comparison:(Extra credit)}
+The comparison is made by plotting the trajectory obtained from our method and using opencv functions like cv2.findEssentialMat and cv2.recoverPose. The results of the comparison are shown below:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=11cm]{output2}
+    \caption{Camera Trajectory comparison}
+    \label{fig:Camera Trajectory comparison}
+\end{figure}
 
 \end{document}
