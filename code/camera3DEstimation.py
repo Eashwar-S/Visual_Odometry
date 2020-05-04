@@ -64,8 +64,9 @@ def main():
 
        frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY) 
        
-
-       #using created functions
+       #####################################################################
+       #                    USING CREATED FUNCTIONS
+       #####################################################################
        matches,kp1,kp2,des1,des2 = featureMatching(frame1,frame2)
        F,inliersP1,inliersP2 = getInliersRansac(matches,kp1,kp2)
 
@@ -73,9 +74,6 @@ def main():
        listKp1,listKp2 = getKeyPointCoordinates(matches,kp1,kp2)
        E = estimateFundamentalMatrix(K,F)
        # E,_ = cv2.findEssentialMat(listKp1,listKp2,cameraMatrix=K,method=cv2.RANSAC)
-       # print(E)
-       # print(Ecv)
-
        R1,R2,R3,R4,C1,C2,C3,C4  = extractCameraPose(E)
 
         
@@ -88,34 +86,43 @@ def main():
        Rset = [R1,R2,R3,R4]
        C,R = disambiguateCameraPose(Cset,Rset,Xset)
        
-       #Using opencv
+       #####################################################################
+       #                      USING OPENCV
+       #####################################################################
        # matches,kp1,kp2,des1,des2 = featureMatching(frame1,frame2)
        # listKp1,listKp2 = getKeyPointCoordinates(matches,kp1,kp2)
        # Ecv,_ = cv2.findEssentialMat(listKp1,listKp2,cameraMatrix=K,method=cv2.RANSAC)
        # points, R, C, mask = cv2.recoverPose(Ecv, listKp1, listKp2,cameraMatrix=K)
 
-       # print(E)
-       # print(Ecv)
-       # print(R)
-       # print(C)
-
        if C is None or R is None:
            continue
-
+    
+       ####################################################################
+       #                     HOMOGENOUS TRANSFORMATION
+       ####################################################################
        Htn = np.hstack((R,C)) 
        Htn = np.vstack((Htn,[0,0,0,1]))
        Ht1 = Ht@Htn
        xt1 = Ht1[0,3] 
        zt1 = Ht1[2,3]
        Ht = Ht1 
+       
 
+       #####################################################################
+       #                      RESULTS
+       ####################################################################
+       #---------------------------------
        # results for created functions
+       #---------------------------------
        result.append([-xt1,zt1])
        ax.plot([-xt1],[zt1],'o')
-       
+      
+       #---------------------------------
        #results for opencv
+       #---------------------------------
        # result.append([-xt1,zt1])
        # ax.plot([-xt1],[zt1],'o')
+      
 
        plt.pause(0.01)
 
@@ -125,9 +132,20 @@ def main():
        cv2.imshow('img2',frame1)
        if cv2.waitKey(1) & 0xFF == ord('q'):
            break
-
+   
+    ########################################################################
+    #                       SAVE RESULTS
+    #######################################################################
+    #------------------------------
+    #     created functions
+    #------------------------------
     np.savetxt("result.csv", result, delimiter=",") 
+
+    #------------------------------
+    #     opencv
+    #------------------------------
     # np.savetxt("resultcv.csv", result, delimiter=",") 
+
     cap.release()
     cv2.destroyAllWindows() 
 
