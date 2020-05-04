@@ -10,12 +10,15 @@ x2,y2 = np.loadtxt('result.csv', delimiter=',', unpack=True)
 
 cap = cv2.VideoCapture('../input/inputVideo.avi')
 i = 0
+
+
 while(cap.isOpened()):
     _,frame = cap.read()
+
     ax.plot(x[i],-y[i],'bo')
     ax.plot(x2[i],y2[i],'ro')
-
-    plt.pause(0.000001)
+    if(i%300 == 0):
+        plt.pause(0.001)
     cv2.imshow('img2',frame)
     i += 1
 
