@@ -66,8 +66,22 @@ The code snippet of the comparison is shown below:
     \label{fig:Fundamental matrix comparison code}
 \end{figure}
 \subsection{Match Outlier Rejection via RANSAC:}
-The corresponding point in two images computed may be noisy. Thus, we may not get the correct estimate of the fundamental matrix. So, in order to get the correct estimate, we employ RANSAC algorithm to remove the outliers. After removing the outiers, the fundamental matrix F with maximum number of inliers is chosen. The RANSAC algorithm is implemented in GetInlierRANSANC.py python file. The fundamental and essential matrix obtained by implemented RANSAC algorithm is compared with 
-
+The corresponding point in two images computed may be noisy. Thus, we may not get the correct estimate of the fundamental matrix. So, in order to get the correct estimate, we employ RANSAC algorithm to remove the outliers. After removing the outiers, the fundamental matrix F with maximum number of inliers is chosen. The RANSAC algorithm is implemented in GetInlierRansac2.py python file. The fundamental and essential matrix obtained by implementing RANSAC algorithm is compared with results from Opencv functions like  cv2.findEssentialMat and cv2.findFundamentalMat which uses RANSAC algorithm. The following are the results obtained:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=11cm]{ransac}
+    \caption{Fundamental and Essential matrix comparison RANSAC}
+    \label{fig:Fundamental and Essential matrix comparison RANSAC}
+\end{figure}
+\newline 
+The code snippet is given below:
+\newpage
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=11cm]{ransac1}
+    \caption{Fundamental and Essential matrix comparison RANSAC code}
+    \label{fig:Fundamental and Essential matrix comparison RANSAC code}
+\end{figure}
 \subsection{Estimate Essential Matrix from Fundamental Matrix:}
 We can find the relative camera poses between two images using the fundamental matrix F. In order to compute relative poses between two images we need to first compute essential matrix(E). In order to compute, essential matrix, we need to intrinsic matrix(K). The relation is given by:
 \begin{figure}[h]
@@ -76,19 +90,18 @@ We can find the relative camera poses between two images using the fundamental m
 \end{figure}
 \newline
 By, due to noises present in matrix K, the third eigen value of matrix E is not zero. This can be corrected by reconstructing it with (1,1,0) singular values.
-\newpage
 \begin{figure}[h]
     \centering
     \includegraphics[width=6cm]{EM2}
 \end{figure}
 This is implemented in EssentialMatrixFromFundamentalMatrix.py python file. The result of the essential matrix was verified by passing the camera matrix as identity matrix and was found that both fundamental and essential matrix was equal.
+\newpage
 \begin{figure}[h]
     \centering
-    \includegraphics[width=11cm]{essmat}
+    \includegraphics[width=10cm]{essmat}
     \caption{Essential matrix}
     \label{fig:Essential matrix}
 \end{figure}
-\newline
 The code snippet of the comparison is shown below:
 \begin{figure}[h]
     \centering
@@ -100,15 +113,15 @@ The code snippet of the comparison is shown below:
 Camera pose refers to the position and angle at which the camera is places w.r.t to the world coordinates. Position of the camera refers to the center of the camera. The position and rotation of the camera can be determined by using essential matrix(E). First, we compute the svd of E.
 \begin{figure}[h]
     \centering
-    \includegraphics[width=3cm]{EM3}
+    \includegraphics[width=2cm]{EM3}
 \end{figure}
 \newline
 Then using the W matrix which is given by:
+\newpage
 \begin{figure}[h]
     \centering
     \includegraphics[width=4cm]{EM4}
 \end{figure}
-\newline
 The camera center C and rotation of the camera R can be computes as follows:
 \begin{enumerate}
 \item $C_1 = U(:,3) , R_1 = U*W*V^{T}$
@@ -124,14 +137,21 @@ If the $det(R) = -1,$ the camera pose must be corrected i.e. $C=-C$ and $R=-R$. 
     \label{fig:Pair of Rotation and Translation matrix obtained}
 \end{figure}
 \newline
-In Opencv, the function returns only 1 rotation matrix and multiplication of rotation and translation matrix. The results are shown below:
-\newpage
+In Opencv, the function returns 2 rotation matrices(R,-R) and 1 translation matrix(T).Generally 4 possible poses exists for a given E. They are [R1, T], [R1, -T], [R2, T], [R2, -T]. These possible poses are exactly equal to the poses obtained from formula. 
+\begin{enumerate}
+\item  $[R, T]  ->   [R1, C_1]$
+\item  $[R, -T]  ->  [R2, C_2]$
+\item  $[-R, -T]  -> [R3, C_3]$
+\item  $[-R, -T]  -> [R4, C_4]$
+\end{enumerate}
+The results are shown below:
 \begin{figure}[h]
     \centering
     \includegraphics[width=6cm]{came1}
     \caption{Rotation and Translation matrix obtained from Opencv}
     \label{fig:Rotation and Translation matrix obtained from Opencv}
 \end{figure}
+\newline
 The code snippet of the comparison is shown below:
 \begin{figure}[h]
     \centering
@@ -177,7 +197,6 @@ where $r_3$ is the third row of the rotation matrix.The best camera configuratio
 
 \subsection{Plotting the motion of the camera:}
 The final part of this pipeline is plotting the camera center based on translation and rotation between successive frames.
-\newpage
 \begin{figure}[h]
     \centering
     \includegraphics[width=11cm]{output1}
