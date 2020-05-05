@@ -7,18 +7,11 @@ In this project have frames of a driving sequence taken by a camera in a car, an
 
 Enter the following to run the code.
 
-For green buoy:
+For Fundamental Matrix:
 ```
-python3 detectbuoygreen.py
+EstimateFundamentalMatrix.py
 ```
-For orange buoy:
-```
-detectbuoyorange.py
-```
-For yellow buoy:
-```
-detectbuoyyellow.py
-```
+
 
 # Result:
 
