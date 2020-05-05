@@ -7,9 +7,10 @@ In this project have frames of a driving sequence taken by a camera in a car, an
 
 Enter the following to run the code.
 
-For Fundamental Matrix:
+For  camera 3D Estimation :
 ```
-EstimateFundamentalMatrix.py
+python3 camera3DEstimation.py
+
 ```
 
 
